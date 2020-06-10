@@ -1,22 +1,18 @@
-import React, { Component } from 'react';
-import './App.css';
-import Result from './Components/Result';
-import Searcher from './Components/Searcher';
-
-
+import React, { Component } from "react";
+import { Result, Searcher } from "./Components/index";
+import { fetchApi } from "./Services/fetchApi";
 
 export default class App extends Component {
-
   state = {
-    term: '',
+    term: "",
     images: [],
-    page: ''
-  }
+    page: "",
+  };
 
   scroll = () => {
-    const anchor = document.querySelector('.jumbotron');
-    anchor.scrollIntoView('auto', 'start');
-  }
+    const anchor = document.querySelector(".jumbotron");
+    anchor.scrollIntoView("auto", "start");
+  };
 
   previusPage = () => {
     //Read current state
@@ -27,10 +23,16 @@ export default class App extends Component {
     page--;
 
     //Add change to state
-    this.setState({
-      page
-    }, () => { this.readApi(); this.scroll() });
-  }
+    this.setState(
+      {
+        page,
+      },
+      () => {
+        this.readApi();
+        this.scroll();
+      }
+    );
+  };
 
   nextPage = () => {
     //Read current state
@@ -39,30 +41,39 @@ export default class App extends Component {
     page++;
 
     //Add change to state
-    this.setState({
-      page
-    }, () => { this.readApi(); this.scroll() });
-  }
+    this.setState(
+      {
+        page,
+      },
+      () => {
+        this.readApi();
+        this.scroll();
+      }
+    );
+  };
 
-  readApi = () => {
+  readApi = async () => {
     const term = this.state.term;
-    const page = this.state.page
-    const url = `https://pixabay.com/api/?key=14969572-e710ae31979c2bfb730c0a7de&q=${term}&per_page=30&page=${page}`
+    const page = this.state.page;
+    const url = `https://pixabay.com/api/?key=14969572-e710ae31979c2bfb730c0a7de&q=${term}&per_page=30&page=${page}`;
 
     //Calling Api
-    fetch(url)
-      .then(res => res.json())
-      .then(res => this.setState({
-        images: res.hits
-      }));
-  }
+    this.setState({
+      images: await fetchApi(url),
+    });
+  };
 
   dataSearch = (term) => {
-    this.setState({
-      term,
-      page: 1
-    }, () => { this.readApi() })
-  }
+    this.setState(
+      {
+        term,
+        page: 1,
+      },
+      () => {
+        this.readApi();
+      }
+    );
+  };
 
   render() {
     return (
@@ -82,5 +93,3 @@ export default class App extends Component {
     );
   }
 }
-
-
